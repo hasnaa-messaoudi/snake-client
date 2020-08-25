@@ -1,5 +1,27 @@
 const net = require('net');
 
+/**
+ * Setup User Interface 
+ * Specifically, so that we can handle user input via stdin
+ */
+const handleUserInput = function(key) {
+  if (key === '\u0003') {
+    process.exit();
+  }
+};
+
+const setupInput = function() {
+  const stdin = process.stdin;
+  stdin.setRawMode(true);
+  stdin.setEncoding('utf8');
+  stdin.resume();
+  stdin.on('data', (key) => {
+    handleUserInput(key);
+  });
+  return stdin;  
+}
+
+
 const connect = function() {
   const conn = net.createConnection({ 
     host: '10.0.2.15',
@@ -9,10 +31,8 @@ const connect = function() {
   conn.on("connect", () => {
     console.log("Successfully connected to game server");
     conn.write('Name: HME');
-    //conn.write('Move: up');
-    //conn.write('Move: right');
-    //conn.write('Move: up');
-    //conn.write('Move: left');
+    setupInput();
+    
   }); 
 
   // interpret incoming data as text
